@@ -97,13 +97,48 @@ public class AppServiceImpl implements AppService {
 
 	@Override
 	public void installaApp(App daInstallare, Smartphone doveInstallare) throws Exception {
-		// TODO Auto-generated method stub
+		EntityManager entityManager = EntityManagerUtil.getEntityManager();
+		try {
+			
+			entityManager.getTransaction().begin();
+			appDAOInstance.setEntityManager(entityManager);
+			
+			daInstallare = entityManager.merge( daInstallare);
+			doveInstallare = entityManager.merge( doveInstallare);
+			
+			daInstallare.addAppToSmartphone(doveInstallare);
+						
+			entityManager.getTransaction().commit();
+		} catch (Exception e) {
+			entityManager.getTransaction().rollback();
+			e.printStackTrace();
+			throw e;
+		} finally {
+			EntityManagerUtil.closeEntityManager(entityManager);
+		}
 
 	}
 
 	@Override
-	public void disinstallaApp(App daDisinstallare, Smartphone doveInstallare) throws Exception {
-		// TODO Auto-generated method stub
+	public void disinstallaApp(App daDisinstallare, Smartphone doveDisinstallare) throws Exception {
+		EntityManager entityManager = EntityManagerUtil.getEntityManager();
+		try {
+			entityManager.getTransaction().begin();
+			appDAOInstance.setEntityManager(entityManager);
+			
+			daDisinstallare = entityManager.merge( daDisinstallare);
+			doveDisinstallare = entityManager.merge( doveDisinstallare);
+			
+			daDisinstallare.removeAppFromSmartphone(doveDisinstallare);
+			
+			entityManager.getTransaction().commit();
+		} catch (Exception e) {
+			entityManager.getTransaction().rollback();
+			e.printStackTrace();
+			throw e;
+		} finally {
+			EntityManagerUtil.closeEntityManager(entityManager);
+		}
 
 	}
 
@@ -114,15 +149,23 @@ public class AppServiceImpl implements AppService {
 	}
 
 	@Override
-	public void setEntityManager(EntityManager entityManager) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void setAppDAO(AppDAO dao) {
 		this.appDAOInstance = dao;
 		
+	}
+
+	@Override
+	public App caricaEager(Long id) throws Exception {
+		EntityManager entityManager = EntityManagerUtil.getEntityManager();
+		try {
+			appDAOInstance.setEntityManager(entityManager);
+			return appDAOInstance.getAppEager(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			EntityManagerUtil.closeEntityManager(entityManager);
+		}
 	}
 
 }

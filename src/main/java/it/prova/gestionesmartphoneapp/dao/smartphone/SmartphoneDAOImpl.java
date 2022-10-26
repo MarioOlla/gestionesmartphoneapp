@@ -19,8 +19,8 @@ public class SmartphoneDAOImpl implements SmartphoneDAO {
 	public Smartphone get(Long id) throws Exception {
 		if (id == null || id < 1)
 			throw new Exception("Impossibile effettuare la ricerca, input mancante o non valido.");
-		return entityManager.createQuery("from Smartphone where id=?1", Smartphone.class).setParameter(1, id).getResultStream().findFirst()
-				.orElse(null);
+		return entityManager.createQuery("from Smartphone where id=?1", Smartphone.class).setParameter(1, id)
+				.getResultStream().findFirst().orElse(null);
 	}
 
 	@Override
@@ -49,6 +49,14 @@ public class SmartphoneDAOImpl implements SmartphoneDAO {
 	public void setEntityManager(EntityManager entityManager) {
 		this.entityManager = entityManager;
 
+	}
+
+	@Override
+	public Smartphone getSmartphoneEager(Long id) throws Exception {
+		if (id == null || id < 1)
+			throw new Exception("Impossibile effettuare la ricerca, input mancante o non valido.");
+		return entityManager.createQuery("from Smartphone s left join fetch s.apps a where s.id=:id", Smartphone.class)
+				.setParameter("id", id).getSingleResult();
 	}
 
 }

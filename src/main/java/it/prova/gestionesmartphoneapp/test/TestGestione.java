@@ -28,18 +28,30 @@ public class TestGestione {
 			testCaricaSingoloSmartphone(smartphoneServiceInstance);
 			stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
 
-			testRimuoviSmartphone(smartphoneServiceInstance);
-			stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
-			
 			testInserisciNuovaApp(appServiceInstance);
 			stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
-			
+
 			testAggiornaApp(appServiceInstance);
 			stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
-			
+
 			testCaricaSingolaApp(appServiceInstance);
 			stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
-			
+
+			testInstallaApp(appServiceInstance, smartphoneServiceInstance);
+			stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
+
+			testCaricaSingoloSmartphoneEager(smartphoneServiceInstance);
+			stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
+
+			testCaricaSingolaAppEager(appServiceInstance);
+			stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
+
+			testDisinstallaApp(appServiceInstance, smartphoneServiceInstance);
+			stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
+
+			testRimuoviSmartphone(smartphoneServiceInstance);
+			stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
+
 			testRimuoviApp(appServiceInstance);
 			stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
 
@@ -84,6 +96,17 @@ public class TestGestione {
 		System.out.println(".....fine testCaricaSingoloSmartphone : PASSED");
 	}
 
+	private static void testCaricaSingoloSmartphoneEager(SmartphoneService smartphoneServiceInstance) throws Exception {
+		System.out.println("\n.....inizio testCaricaSingoloSmartphone ");
+		List<Smartphone> tuttiInDB = smartphoneServiceInstance.listAll();
+		if (tuttiInDB.isEmpty())
+			throw new RuntimeException("testCaricaSingoloSmartphone : FAILED, il DB non contiene smartphones.");
+		Smartphone result = smartphoneServiceInstance.caricaEager(tuttiInDB.get(0).getId());
+		if (result.getApps().isEmpty())
+			throw new RuntimeException("testCaricaSingoloSmartphone : FAILED, le app non sono state caricate.");
+		System.out.println(".....fine testCaricaSingoloSmartphone : PASSED");
+	}
+
 	private static void testRimuoviSmartphone(SmartphoneService smartphoneServiceInstance) throws Exception {
 		System.out.println("\n.....inizio testRimuoviSmartphone ");
 		List<Smartphone> tuttiInDB = smartphoneServiceInstance.listAll();
@@ -124,8 +147,18 @@ public class TestGestione {
 			throw new RuntimeException("testCaricaSingolaApp : FAILED, il DB non contiene app.");
 		App result = appServiceInstance.caricaSingola(tuttiInDB.get(0).getId());
 		if (!result.getNome().equals(tuttiInDB.get(0).getNome()))
-			throw new RuntimeException(
-					"testCaricaSingolaApp : FAILED, la ricerca non ha dato i risultati attesi.");
+			throw new RuntimeException("testCaricaSingolaApp : FAILED, la ricerca non ha dato i risultati attesi.");
+		System.out.println(".....fine testCaricaSingolaApp : PASSED");
+	}
+
+	private static void testCaricaSingolaAppEager(AppService appServiceInstance) throws Exception {
+		System.out.println("\n.....inizio testCaricaSingolaApp ");
+		List<App> tuttiInDB = appServiceInstance.listAll();
+		if (tuttiInDB.isEmpty())
+			throw new RuntimeException("testCaricaSingolaApp : FAILED, il DB non contiene app.");
+		App result = appServiceInstance.caricaEager(tuttiInDB.get(0).getId());
+		if (!result.getNome().equals(tuttiInDB.get(0).getNome()))
+			throw new RuntimeException("testCaricaSingolaApp : FAILED, la ricerca non ha dato i risultati attesi.");
 		System.out.println(".....fine testCaricaSingolaApp : PASSED");
 	}
 
@@ -138,6 +171,38 @@ public class TestGestione {
 		if (appServiceInstance.caricaSingola(tuttiInDB.get(0).getId()) != null)
 			throw new RuntimeException("testRimuoviApp : FAILED, l' app non e' stata cancellata.");
 		System.out.println(".....fine testRimuoviApp : PASSED");
+	}
+
+	private static void testInstallaApp(AppService appServiceInstance, SmartphoneService smartphoneServiceInstance)
+			throws Exception {
+		System.out.println("\n.....inizio testInstallaApp ");
+		List<App> tutteLeApp = appServiceInstance.listAll();
+		List<Smartphone> tuttiGliSmartphone = smartphoneServiceInstance.listAll();
+		if (tutteLeApp.isEmpty() || tuttiGliSmartphone.isEmpty())
+			throw new RuntimeException("testInstallaApp : FAILED, una o entrambe le tabelle del DB sono vuote.");
+		appServiceInstance.installaApp(tutteLeApp.get(0), tuttiGliSmartphone.get(0));
+		if (smartphoneServiceInstance.caricaEager(tuttiGliSmartphone.get(0).getId()).getApps().isEmpty())
+			throw new RuntimeException("testInstallaApp : FAILED, l'app non risulta installata sullo smartphone.");
+		System.out.println(".....fine testInstallaApp : PASSED");
+	}
+
+	private static void testDisinstallaApp(AppService appServiceInstance, SmartphoneService smartphoneServiceInstance)
+			throws Exception {
+		System.out.println("\n.....inizio testDisinstallaApp ");
+		List<App> tutteLeApp = appServiceInstance.listAll();
+		List<Smartphone> tuttiGliSmartphone = smartphoneServiceInstance.listAll();
+		if (tutteLeApp.isEmpty() || tuttiGliSmartphone.isEmpty())
+			throw new RuntimeException("testDisinstallaApp : FAILED, una o entrambe le tabelle del DB sono vuote.");
+		Long idSmartphoneDaRipulire = tuttiGliSmartphone.get(0).getId();
+		if (smartphoneServiceInstance.caricaEager(tuttiGliSmartphone.get(0).getId()).getApps().isEmpty())
+			throw new RuntimeException("testDisinstallaApp : FAILED, l'app non risulta installata sullo smartphone.");
+		appServiceInstance.disinstallaApp(appServiceInstance.caricaEager(tutteLeApp.get(0).getId()),
+				smartphoneServiceInstance.caricaEager(tuttiGliSmartphone.get(0).getId()));
+		Smartphone ripulito = smartphoneServiceInstance.caricaEager(idSmartphoneDaRipulire);
+		if (ripulito == null)
+			throw new RuntimeException(
+					"testDisinstallaApp : FAILED, l'app risulta ancora installata sullo smartphone dopo la cancellazione.");
+		System.out.println(".....fine testDisinstallaApp : PASSED");
 	}
 
 //	private static void test()throws Exception{

@@ -114,6 +114,20 @@ public class SmartphoneServiceImpl implements SmartphoneService {
 		
 	}
 
+	@Override
+	public Smartphone caricaEager(Long id) throws Exception {
+		EntityManager entityManager = EntityManagerUtil.getEntityManager();
+		try {
+			smartphoneDAOInstance.setEntityManager(entityManager);
+			return smartphoneDAOInstance.getSmartphoneEager(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}finally {
+			EntityManagerUtil.closeEntityManager(entityManager);
+		}
+	}
+
 
 
 }
