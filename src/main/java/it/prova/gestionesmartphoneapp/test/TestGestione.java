@@ -1,10 +1,26 @@
 package it.prova.gestionesmartphoneapp.test;
 
+import javax.swing.text.html.parser.Entity;
+
+import it.prova.gestionesmartphoneapp.dao.EntityManagerUtil;
+import it.prova.gestionesmartphoneapp.service.AppService;
+import it.prova.gestionesmartphoneapp.service.MyServiceFactory;
+import it.prova.gestionesmartphoneapp.service.SmartphoneService;
+
 public class TestGestione {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		AppService appServiceInstance = MyServiceFactory.getAppServiceInstance();
+		SmartphoneService smartphoneServiceInstance = MyServiceFactory.getSmartphoneServiceInstance();
+		
+		try {
+			
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		finally {
+			EntityManagerUtil.shutdown();
+		}
 	}
 //	Inserimento nuovo Smartphone
 //	Aggiornamento versioneOS di uno Smartphone esistente
