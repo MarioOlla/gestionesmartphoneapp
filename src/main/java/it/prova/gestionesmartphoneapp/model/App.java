@@ -32,7 +32,7 @@ public class App {
 	private String nome;
 
 	@Column(name = "datainstallazione")
-	private Date dataInstallazione;
+	private Date dataInstallazione;			//assumo che sia la data dell'installazione piu' recente
 
 	@Column(name = "dataultimoaggiornamento")
 	private Date dataUltimoAggiornamento;
@@ -52,15 +52,12 @@ public class App {
 	public App() {
 	}
 
-	public App(String nome, Date dataInstallazione, Date dataUltimoAggiornamento, String versione,
-			LocalDateTime createDateTime, LocalDateTime updateDateTime) {
+	public App(String nome, Date dataInstallazione, Date dataUltimoAggiornamento, String versione) {
 		super();
 		this.nome = nome;
 		this.dataInstallazione = dataInstallazione;
 		this.dataUltimoAggiornamento = dataUltimoAggiornamento;
 		this.versione = versione;
-		this.createDateTime = createDateTime;
-		this.updateDateTime = updateDateTime;
 	}
 
 	public Long getId() {

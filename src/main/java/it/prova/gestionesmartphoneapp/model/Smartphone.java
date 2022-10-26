@@ -17,7 +17,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "smarthphone")
+@Table(name = "smartphone")
 public class Smartphone {
 	
 	@Id
@@ -47,15 +47,12 @@ public class Smartphone {
 	
 	public Smartphone() {}
 
-	public Smartphone(String marca, String modello, int prezzo, String versioneOS, LocalDateTime createDateTime,
-			LocalDateTime updateDateTime) {
+	public Smartphone(String marca, String modello, int prezzo, String versioneOS) {
 		super();
 		this.marca = marca;
 		this.modello = modello;
 		this.prezzo = prezzo;
 		this.versioneOS = versioneOS;
-		this.createDateTime = createDateTime;
-		this.updateDateTime = updateDateTime;
 	}
 
 	public Long getId() {

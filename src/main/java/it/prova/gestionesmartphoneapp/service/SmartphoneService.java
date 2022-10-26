@@ -17,7 +17,7 @@ public interface SmartphoneService {
 
 	public void rimuovi(Smartphone daEliminare) throws Exception;
 	
-	public void aggiornaOS(String uovaVersione)throws Exception;
+	public void aggiornaOS(String nuovaVersione)throws Exception;
 	
 	public void rimuoviSmartphoneConAppInstallate(Smartphone daEliminare)throws Exception;
 

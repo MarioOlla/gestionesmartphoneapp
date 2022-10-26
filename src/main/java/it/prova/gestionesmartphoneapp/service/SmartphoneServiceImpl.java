@@ -2,6 +2,9 @@ package it.prova.gestionesmartphoneapp.service;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
+import it.prova.gestionesmartphoneapp.dao.EntityManagerUtil;
 import it.prova.gestionesmartphoneapp.dao.MyDaoFactory;
 import it.prova.gestionesmartphoneapp.dao.smartphone.SmartphoneDAO;
 import it.prova.gestionesmartphoneapp.model.Smartphone;
@@ -12,36 +15,89 @@ public class SmartphoneServiceImpl implements SmartphoneService {
 	
 	@Override
 	public List<Smartphone> listAll() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		EntityManager entityManager = EntityManagerUtil.getEntityManager();
+		try {
+			smartphoneDAOInstance.setEntityManager(entityManager);
+			return smartphoneDAOInstance.list();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}finally {
+			EntityManagerUtil.closeEntityManager(entityManager);
+		}
 	}
 
 	@Override
 	public Smartphone caricaSingolo(Long id) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		EntityManager entityManager = EntityManagerUtil.getEntityManager();
+		try {
+			smartphoneDAOInstance.setEntityManager(entityManager);
+			return smartphoneDAOInstance.get(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}finally {
+			EntityManagerUtil.closeEntityManager(entityManager);
+		}
 	}
 
 	@Override
 	public void aggiorna(Smartphone daAggiornare) throws Exception {
-		// TODO Auto-generated method stub
+		EntityManager entityManager = EntityManagerUtil.getEntityManager();
+		try {
+			smartphoneDAOInstance.setEntityManager(entityManager);
+			entityManager.getTransaction().begin();
+			daAggiornare.setCreateDateTime(smartphoneDAOInstance.get(daAggiornare.getId()).getCreateDateTime());
+			smartphoneDAOInstance.update(daAggiornare);
+			entityManager.getTransaction().commit();
+		} catch (Exception e) {
+			entityManager.getTransaction().rollback();
+			e.printStackTrace();
+			throw e;
+		}finally {
+			EntityManagerUtil.closeEntityManager(entityManager);
+		}
 
 	}
 
 	@Override
 	public void inserisciNuovo(Smartphone daAggiungere) throws Exception {
-		// TODO Auto-generated method stub
+		EntityManager entityManager = EntityManagerUtil.getEntityManager();
+		try {
+			smartphoneDAOInstance.setEntityManager(entityManager);
+			entityManager.getTransaction().begin();
+			smartphoneDAOInstance.insert(daAggiungere);
+			entityManager.getTransaction().commit();
+		} catch (Exception e) {
+			entityManager.getTransaction().rollback();
+			e.printStackTrace();
+			throw e;
+		}finally {
+			EntityManagerUtil.closeEntityManager(entityManager);
+		}
 
 	}
 
 	@Override
 	public void rimuovi(Smartphone daEliminare) throws Exception {
-		// TODO Auto-generated method stub
+		EntityManager entityManager = EntityManagerUtil.getEntityManager();
+		try {
+			smartphoneDAOInstance.setEntityManager(entityManager);
+			entityManager.getTransaction().begin();
+			smartphoneDAOInstance.delete(daEliminare);
+			entityManager.getTransaction().commit();
+		} catch (Exception e) {
+			entityManager.getTransaction().rollback();
+			e.printStackTrace();
+			throw e;
+		}finally {
+			EntityManagerUtil.closeEntityManager(entityManager);
+		}
 
 	}
 
 	@Override
-	public void aggiornaOS(String uovaVersione) throws Exception {
+	public void aggiornaOS(String nuovaVersione) throws Exception {
 		// TODO Auto-generated method stub
 
 	}
