@@ -6,4 +6,6 @@ import it.prova.gestionesmartphoneapp.model.Smartphone;
 public interface SmartphoneDAO extends IBaseDAO<Smartphone> {
 
 	public Smartphone getSmartphoneEager(Long id)throws Exception;
+	
+	public void uninstallAllApps(Smartphone s)throws Exception;
 }

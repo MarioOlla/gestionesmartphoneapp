@@ -12,7 +12,7 @@ import it.prova.gestionesmartphoneapp.model.Smartphone;
 public class SmartphoneServiceImpl implements SmartphoneService {
 
 	SmartphoneDAO smartphoneDAOInstance;
-	
+
 	@Override
 	public List<Smartphone> listAll() throws Exception {
 		EntityManager entityManager = EntityManagerUtil.getEntityManager();
@@ -22,7 +22,7 @@ public class SmartphoneServiceImpl implements SmartphoneService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
-		}finally {
+		} finally {
 			EntityManagerUtil.closeEntityManager(entityManager);
 		}
 	}
@@ -36,7 +36,7 @@ public class SmartphoneServiceImpl implements SmartphoneService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
-		}finally {
+		} finally {
 			EntityManagerUtil.closeEntityManager(entityManager);
 		}
 	}
@@ -54,7 +54,7 @@ public class SmartphoneServiceImpl implements SmartphoneService {
 			entityManager.getTransaction().rollback();
 			e.printStackTrace();
 			throw e;
-		}finally {
+		} finally {
 			EntityManagerUtil.closeEntityManager(entityManager);
 		}
 
@@ -72,7 +72,7 @@ public class SmartphoneServiceImpl implements SmartphoneService {
 			entityManager.getTransaction().rollback();
 			e.printStackTrace();
 			throw e;
-		}finally {
+		} finally {
 			EntityManagerUtil.closeEntityManager(entityManager);
 		}
 
@@ -90,28 +90,53 @@ public class SmartphoneServiceImpl implements SmartphoneService {
 			entityManager.getTransaction().rollback();
 			e.printStackTrace();
 			throw e;
-		}finally {
+		} finally {
 			EntityManagerUtil.closeEntityManager(entityManager);
 		}
 
 	}
 
 	@Override
-	public void aggiornaOS(String nuovaVersione) throws Exception {
-		// TODO Auto-generated method stub
-
+	public void aggiornaOS(Smartphone s, String nuovaVersione) throws Exception {
+		EntityManager entityManager = EntityManagerUtil.getEntityManager();
+		try {
+			smartphoneDAOInstance.setEntityManager(entityManager);
+			entityManager.getTransaction().begin();
+			s.setVersioneOS(nuovaVersione);
+			smartphoneDAOInstance.update(s);
+			entityManager.getTransaction().commit();
+		} catch (Exception e) {
+			entityManager.getTransaction().rollback();
+			e.printStackTrace();
+			throw e;
+		} finally {
+			EntityManagerUtil.closeEntityManager(entityManager);
+		}
 	}
 
 	@Override
 	public void rimuoviSmartphoneConAppInstallate(Smartphone daEliminare) throws Exception {
-		// TODO Auto-generated method stub
+		EntityManager entityManager = EntityManagerUtil.getEntityManager();
+		try {
+			smartphoneDAOInstance.setEntityManager(entityManager);
+			entityManager.getTransaction().begin();
+			smartphoneDAOInstance.uninstallAllApps(daEliminare);
+			smartphoneDAOInstance.delete(daEliminare);
+			entityManager.getTransaction().commit();
+		} catch (Exception e) {
+			entityManager.getTransaction().rollback();
+			e.printStackTrace();
+			throw e;
+		} finally {
+			EntityManagerUtil.closeEntityManager(entityManager);
+		}
 
 	}
 
 	@Override
 	public void setSmartphoneDAO(SmartphoneDAO smartphoneDAOInstance) {
 		this.smartphoneDAOInstance = MyDaoFactory.getSmartphoneDAOInstance();
-		
+
 	}
 
 	@Override
@@ -123,11 +148,9 @@ public class SmartphoneServiceImpl implements SmartphoneService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
-		}finally {
+		} finally {
 			EntityManagerUtil.closeEntityManager(entityManager);
 		}
 	}
-
-
 
 }

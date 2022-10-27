@@ -54,7 +54,8 @@ public class AppDAOImpl implements AppDAO {
 	public App getAppEager(Long id) throws Exception {
 		if (id == null || id < 1)
 			throw new Exception("Impossibile effettuare la ricerca, id mancante o non valido.");
-		TypedQuery<App> result =  entityManager.createQuery("from App a inner join fetch a.smartphones where a.id=?1", App.class).setParameter(1, id);
+		TypedQuery<App> result = entityManager
+				.createQuery("from App a inner join fetch a.smartphones where a.id=?1", App.class).setParameter(1, id);
 		return result.getResultStream().findFirst().orElse(null);
 	}
 

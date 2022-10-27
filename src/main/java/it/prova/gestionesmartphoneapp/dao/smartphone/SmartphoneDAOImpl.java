@@ -59,4 +59,11 @@ public class SmartphoneDAOImpl implements SmartphoneDAO {
 				.setParameter("id", id).getSingleResult();
 	}
 
+	@Override
+	public void uninstallAllApps(Smartphone s) throws Exception {
+		if (s == null || s.getId() == null || s.getId() < 1)
+			throw new Exception("Impossibile eseguire operazione, input invalido");
+		entityManager.createNativeQuery("delete from app_smartphone where smartphone_id=?1").setParameter(1,s.getId()).executeUpdate();
+	}
+
 }

@@ -24,7 +24,7 @@ public interface AppService {
 
 	public void disinstallaApp(App daDisinstallare, Smartphone doveDisinstallare) throws Exception;
 
-	public void aggiornaVersioneEAggiornaDataUltimoUpdate(String versione) throws Exception;
+	public void aggiornaVersioneEAggiornaDataUltimoUpdate(App daAggiornare, String versione) throws Exception;
 
 	public void setAppDAO(AppDAO dao);
 

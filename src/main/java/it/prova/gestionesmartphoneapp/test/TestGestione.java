@@ -46,6 +46,12 @@ public class TestGestione {
 			testCaricaSingolaAppEager(appServiceInstance);
 			stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
 
+			testAggiornamentoSOSmartphoneEsistente(smartphoneServiceInstance);
+			stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
+
+			testAggiornaVersioneEAggiornaDataUltimoUpdate(appServiceInstance);
+			stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
+
 			testDisinstallaApp(appServiceInstance, smartphoneServiceInstance);
 			stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
 
@@ -53,6 +59,9 @@ public class TestGestione {
 			stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
 
 			testRimuoviApp(appServiceInstance);
+			stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
+
+			testRimuoviSmartphoneConAppInstallate(smartphoneServiceInstance, appServiceInstance);
 			stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
 
 		} catch (Throwable e) {
@@ -199,29 +208,81 @@ public class TestGestione {
 		appServiceInstance.disinstallaApp(appServiceInstance.caricaEager(tutteLeApp.get(0).getId()),
 				smartphoneServiceInstance.caricaEager(tuttiGliSmartphone.get(0).getId()));
 		Smartphone ripulito = smartphoneServiceInstance.caricaEager(idSmartphoneDaRipulire);
-		if (ripulito == null)
+		if (!ripulito.getApps().isEmpty())
 			throw new RuntimeException(
 					"testDisinstallaApp : FAILED, l'app risulta ancora installata sullo smartphone dopo la cancellazione.");
 		System.out.println(".....fine testDisinstallaApp : PASSED");
 	}
 
-//	private static void test()throws Exception{
-//		System.out.println("\n.....inizio test ");
-//		if()
-//			throw new RuntimeException("test : FAILED, ");
-//		System.out.println(".....fine test : PASSED");
-//	}
+	private static void testAggiornamentoSOSmartphoneEsistente(SmartphoneService smartphoneServiceInstance)
+			throws Exception {
+		System.out.println("\n.....inizio testAggiornamentoSOSmartphoneEsistente ");
+		List<Smartphone> tuttiInDB = smartphoneServiceInstance.listAll();
+		if (tuttiInDB.isEmpty())
+			throw new RuntimeException(
+					"testAggiornamentoSOSmartphoneEsistente : FAILED, il DB non contiene smartphone.");
+		smartphoneServiceInstance.aggiornaOS(tuttiInDB.get(0), "4.9.2");
+		if (!smartphoneServiceInstance.caricaSingolo(tuttiInDB.get(0).getId()).getVersioneOS().equals("4.9.2"))
+			throw new RuntimeException(
+					"testAggiornamentoSOSmartphoneEsistente : FAILED, la versione non e'stata aggiornata.");
+		System.out.println(".....fine testAggiornamentoSOSmartphoneEsistente : PASSED");
+	}
+
+	private static void testAggiornaVersioneEAggiornaDataUltimoUpdate(AppService appServiceInstance) throws Exception {
+		System.out.println("\n.....inizio test ");
+		List<App> tutteInDB = appServiceInstance.listAll();
+		if (tutteInDB.isEmpty())
+			throw new RuntimeException("test : FAILED, non ci sono app nel DB");
+		Date vecchioAggiornamento = tutteInDB.get(0).getDataUltimoAggiornamento();
+		appServiceInstance.aggiornaVersioneEAggiornaDataUltimoUpdate(tutteInDB.get(0), "2.5.0");
+		if (appServiceInstance.caricaSingola(tutteInDB.get(0).getId()).getDataUltimoAggiornamento()
+				.equals(vecchioAggiornamento))
+			throw new RuntimeException("test : FAILED, l'aggiornamento non e' stato eseguito correttamente.");
+		System.out.println(".....fine test : PASSED");
+	}
+
+	private static void testRimuoviSmartphoneConAppInstallate(SmartphoneService smartphoneServiceInstance,
+			AppService appServiceInstance) throws Exception {
+		System.out.println("\n.....inizio testRimuoviSmartphoneConAppInstallate ");
+
+		Smartphone test = new Smartphone("Samsung", "Galaxy", 120, "4.8.3");
+		App nuovaApp1 = new App("My App", null, new Date(), "2.0.11");
+		App nuovaApp2 = new App("My other App", null, new Date(), "3.1.0");
+
+		smartphoneServiceInstance.inserisciNuovo(test);
+		appServiceInstance.inserisciNuova(nuovaApp2);
+		appServiceInstance.inserisciNuova(nuovaApp1);
+
+		if (appServiceInstance.listAll().isEmpty() || smartphoneServiceInstance.listAll().isEmpty())
+			throw new RuntimeException(
+					"testRimuoviSmartphoneConAppInstallate : FAILED, gli inserimenti preliminari non sono riusciti.");
+
+		appServiceInstance.installaApp(nuovaApp1, test);
+		appServiceInstance.installaApp(nuovaApp2, test);
+
+		test = smartphoneServiceInstance.caricaEager(smartphoneServiceInstance.listAll().get(0).getId());
+
+		stampaContenutoDB(appServiceInstance, smartphoneServiceInstance);
+
+		if (test.getApps().isEmpty())
+			throw new RuntimeException(
+					"testRimuoviSmartphoneConAppInstallate : FAILED, installazione preliminare delle app fallita.");
+
+		smartphoneServiceInstance.rimuoviSmartphoneConAppInstallate(test);
+
+		if (!smartphoneServiceInstance.listAll().isEmpty())
+			throw new RuntimeException(
+					"testRimuoviSmartphoneConAppInstallate : FAILED, rimozione smartphone non riuscita.");
+		System.out.println(".....fine testRimuoviSmartphoneConAppInstallate : PASSED");
+
+		appServiceInstance.rimuovi(appServiceInstance.listAll().get(0));
+		appServiceInstance.rimuovi(appServiceInstance.listAll().get(0));
+	}
 
 	private static void stampaContenutoDB(AppService appServiceInstance, SmartphoneService smartphoneServiceInstance)
 			throws Exception {
 		System.out.println("Nel database ci sono " + appServiceInstance.listAll().size() + " app e "
 				+ smartphoneServiceInstance.listAll().size() + " smartphones.");
 	}
-//	Inserimento nuovo Smartphone
-//	Aggiornamento versioneOS di uno Smartphone esistente
-//	Inserimento nuova App
-//	Aggiornamento versione APP con relativa data
-//	Installazione di App esistente su Smartphone esistente
-//	Disinstallazione di una App da uno Smartphone
-//	Rimozione completa di uno Smartphone associato a due App
+
 }

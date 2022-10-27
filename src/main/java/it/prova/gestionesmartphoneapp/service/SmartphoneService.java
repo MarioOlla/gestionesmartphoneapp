@@ -19,7 +19,7 @@ public interface SmartphoneService {
 
 	public Smartphone caricaEager(Long id) throws Exception;
 
-	public void aggiornaOS(String nuovaVersione) throws Exception;
+	public void aggiornaOS(Smartphone s, String nuovaVersione) throws Exception;
 
 	public void rimuoviSmartphoneConAppInstallate(Smartphone daEliminare) throws Exception;
 

@@ -32,7 +32,7 @@ public class App {
 	private String nome;
 
 	@Column(name = "datainstallazione")
-	private Date dataInstallazione;			//assumo che sia la data dell'installazione piu' recente
+	private Date dataInstallazione;			//assumo che si riferisca all'ultima installazione avvenuta
 
 	@Column(name = "dataultimoaggiornamento")
 	private Date dataUltimoAggiornamento;
@@ -127,6 +127,7 @@ public class App {
 	public void addAppToSmartphone(Smartphone s) {
 		s.getApps().add(this);
 		this.smartphones.add(s);
+		this.dataInstallazione = new Date();
 	}
 
 	public void removeAppFromSmartphone(Smartphone s) {
